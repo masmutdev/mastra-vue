@@ -247,7 +247,7 @@ const mapUser = (user: {
 type Pelanggan = ReturnType<typeof mapUser>
 const table = useTable<Pelanggan>()
 
-const columnCount = 5
+const columnCount = 8
 
 onMounted(async () => {
   await table.fetchFromApi('https://randomuser.me/api/?results=100', mapUser)

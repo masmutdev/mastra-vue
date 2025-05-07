@@ -22,6 +22,7 @@ export function useTable<T extends Record<string, any>>() {
   const selectedData = ref<WithId<T> | null>(null)
   const theadRef = ref<HTMLElement | null>(null)
   const columnCount = ref(0)
+  const isCreating = ref(false)
 
   const sortBy = ref<keyof T | null>(null)
   const sortDirection = ref<'asc' | 'desc'>('asc')
@@ -107,6 +108,36 @@ export function useTable<T extends Record<string, any>>() {
     }
   }
 
+  const saveItem = () => {
+    if (!selectedData.value) return
+
+    const rawData = toRaw(selectedData.value)
+
+    console.log('🔄 Simpan data:', rawData)
+
+    if (isCreating.value) {
+      // Tambah data baru
+      items.value.unshift(rawData)
+    } else {
+      // Update data yang ada
+      const index = items.value.findIndex((i) => i.id === rawData.id)
+      if (index !== -1) {
+        items.value[index] = rawData
+      }
+    }
+
+    closeModal()
+  }
+
+  const createNew = (initialData: T) => {
+    selectedData.value = {
+      id: Date.now(), // ID sementara
+      data: initialData,
+    }
+    isCreating.value = true
+    showModal.value = true
+  }
+
   const handleEdit = (item: WithId<T>) => {
     selectedData.value = item
     showModal.value = true
@@ -130,6 +161,7 @@ export function useTable<T extends Record<string, any>>() {
   const closeModal = () => {
     showModal.value = false
     selectedData.value = null
+    isCreating.value = false
   }
 
   watch([perPage, search], () => {
@@ -166,5 +198,8 @@ export function useTable<T extends Record<string, any>>() {
     showDeleteConfirm,
     confirmDelete,
     deleteItem,
+    saveItem,
+    isCreating,
+    createNew,
   }
 }

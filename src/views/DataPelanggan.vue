@@ -1,5 +1,51 @@
 <template>
   <div class="bg-white dark:bg-gray-800 rounded-lg p-4 space-y-4">
+    <div
+      class="flex items-center justify-between px-4 py-3 border-b dark:border-b border-gray-200 dark:border-gray-700"
+    >
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Data Pelanggan</h2>
+      <div class="flex items-center gap-2">
+        <button
+          @click="tambahPelanggan"
+          class="cursor-pointer px-3 py-1.5 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
+        >
+          Tambah
+        </button>
+
+        <div class="relative" ref="dropdownRef">
+          <button
+            @click="toggleBulkMenu"
+            class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <IconDotsVertical class="w-5 h-5 text-gray-700 dark:text-white" />
+          </button>
+
+          <div
+            v-if="showDotsMenu"
+            class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow z-50"
+          >
+            <button
+              @click="bulkEdit"
+              :disabled="table.selected.value.length === 0"
+              class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              <IconEdit class="w-4 h-4 text-yellow-500" />
+              Bulk Edit
+            </button>
+
+            <button
+              @click="bulkDelete"
+              :disabled="table.selected.value.length === 0"
+              class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              <IconTrash class="w-4 h-4 text-red-500" />
+              Bulk Hapus
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Controls -->
     <div class="flex flex-col sm:flex-row justify-start gap-4">
       <select
@@ -143,91 +189,61 @@
       </div>
     </div>
 
-    <!-- Modal Edit -->
-    <div
-      v-if="table.showModal.value"
-      class="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
-    >
-      <div class="bg-white p-6 rounded shadow max-w-md w-full">
-        <h2 class="text-lg font-semibold mb-4">Edit Data</h2>
-        <div class="space-y-3 text-sm text-gray-700">
-          <label class="block">
-            <span class="block mb-1">Nama</span>
-            <input
-              v-model="table.selectedData.value!.data.nama"
-              class="w-full border px-2 py-1 rounded"
-            />
-          </label>
-          <label class="block">
-            <span class="block mb-1">Email</span>
-            <input
-              v-model="table.selectedData.value!.data.email"
-              class="w-full border px-2 py-1 rounded"
-            />
-          </label>
-          <label class="block">
-            <span class="block mb-1">Status</span>
-            <select
-              v-model="table.selectedData.value!.data.status"
-              class="w-full border px-2 py-1 rounded"
-            >
-              <option value="Aktif">Aktif</option>
-              <option value="Tidak Aktif">Tidak Aktif</option>
-            </select>
-          </label>
-        </div>
-        <div class="mt-6 flex justify-end gap-2">
-          <button
-            @click="table.closeModal"
-            class="px-3 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
-          >
-            Batal
-          </button>
-          <button
-            @click="table.closeModal"
-            class="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Simpan
-          </button>
-        </div>
-      </div>
-    </div>
+    <AddModal
+      v-if="table.showModal.value && table.isCreating.value && table.selectedData.value"
+      :show="true"
+      :model="table.selectedData.value.data"
+      :onClose="table.closeModal"
+      :onSave="table.saveItem"
+    />
 
-    <!-- Modal Delete -->
-    <div
-      v-if="table.showDeleteConfirm.value"
-      class="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
-    >
-      <div class="bg-white p-6 rounded shadow max-w-md w-full">
-        <h2 class="text-lg font-semibold mb-4 text-red-600">Konfirmasi Hapus</h2>
-        <p class="text-sm text-gray-700">
-          Apakah kamu yakin ingin menghapus data
-          <strong>{{ table.deleteTarget.value?.data.nama }}</strong
-          >?
-        </p>
-        <div class="mt-6 flex justify-end gap-2">
-          <button
-            @click="table.showDeleteConfirm.value = false"
-            class="px-3 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
-          >
-            Batal
-          </button>
-          <button
-            @click="table.deleteItem"
-            class="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
-          >
-            Hapus
-          </button>
-        </div>
-      </div>
-    </div>
+    <EditModal
+      v-if="table.showModal.value && !table.isCreating.value && table.selectedData.value"
+      :show="true"
+      :model="table.selectedData.value.data"
+      :onClose="table.closeModal"
+      :onSave="table.saveItem"
+    />
+
+    <DeleteModal
+      :show="table.showDeleteConfirm.value"
+      :nama="table.deleteTarget.value?.data.nama ?? ''"
+      :onCancel="() => (table.showDeleteConfirm.value = false)"
+      :onConfirm="table.deleteItem"
+    />
+
+    <BulkEditModal
+      :show="showBulkEdit"
+      :count="table.selected.value.length"
+      :onClose="() => (showBulkEdit = false)"
+      :onSave="handleBulkEdit"
+    />
+
+    <BulkDeleteModal
+      :show="showBulkDelete"
+      :count="table.selected.value.length"
+      :onCancel="() => (showBulkDelete = false)"
+      :onConfirm="handleBulkDelete"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useTable } from '@/composables/useTable'
-import { IconChevronUp, IconChevronDown } from '@tabler/icons-vue'
+import {
+  IconChevronUp,
+  IconChevronDown,
+  IconDotsVertical,
+  IconEdit,
+  IconTrash,
+} from '@tabler/icons-vue'
+import AddModal from '@/components/modal/AddModal.vue'
+import EditModal from '@/components/modal/EditModal.vue'
+import DeleteModal from '@/components/modal/DeleteModal.vue'
+import BulkEditModal from '@/components/modal/BulkEditModal.vue'
+import BulkDeleteModal from '@/components/modal/BulkDeleteModal.vue'
+import { onClickOutside } from '@vueuse/core'
 
 const mapUser = (user: {
   name: { first: string; last: string }
@@ -238,7 +254,7 @@ const mapUser = (user: {
 }) => ({
   nama: `${user.name.first} ${user.name.last}`,
   email: user.email,
-  status: Math.random() > 0.5 ? 'Aktif' : ('Tidak Aktif' as const),
+  status: (Math.random() > 0.5 ? 'Aktif' : 'Tidak Aktif') as 'Aktif' | 'Tidak Aktif',
   gender: user.gender,
   phone: user.phone,
   lokasi: `${user.location.city}, ${user.location.country}`,
@@ -247,12 +263,58 @@ const mapUser = (user: {
 type Pelanggan = ReturnType<typeof mapUser>
 const table = useTable<Pelanggan>()
 
-const columnCount = 5
+const columnCount = 8
 
 onMounted(async () => {
   await table.fetchFromApi('https://randomuser.me/api/?results=100', mapUser)
 })
 
+const showDotsMenu = ref(false)
+const toggleBulkMenu = () => {
+  showDotsMenu.value = !showDotsMenu.value
+}
+
+const dropdownRef = ref(null)
+onClickOutside(dropdownRef, () => (showDotsMenu.value = false))
+
+const pelangganBaru: Pelanggan = {
+  nama: '',
+  email: '',
+  status: 'Aktif',
+  gender: '',
+  phone: '',
+  lokasi: '',
+}
+
+const tambahPelanggan = () => {
+  table.createNew(pelangganBaru)
+}
+
+const bulkEdit = () => {
+  showBulkEdit.value = true
+}
+
+const bulkDelete = () => {
+  showBulkDelete.value = true
+}
+
+const showBulkEdit = ref(false)
+const showBulkDelete = ref(false)
+
+const handleBulkEdit = (status: 'Aktif' | 'Tidak Aktif') => {
+  table.items.value.forEach((item) => {
+    if (table.selected.value.includes(item.id)) {
+      item.data.status = status
+    }
+  })
+  showBulkEdit.value = false
+}
+
+const handleBulkDelete = () => {
+  table.items.value = table.items.value.filter((item) => !table.selected.value.includes(item.id))
+  table.selected.value = []
+  showBulkDelete.value = false
+}
 table.setCustomFilter(
   (item, keyword) =>
     item.nama.toLowerCase().includes(keyword) || item.email.toLowerCase().includes(keyword),

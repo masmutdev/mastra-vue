@@ -9,7 +9,7 @@ import DesktopLayout from './DesktopLayout.vue'
 
 const isMobile = ref(false)
 
-onMounted(() => {
-  isMobile.value = /Mobi|Android/i.test(navigator.userAgent)
-})
+// onMounted(() => {
+//   isMobile.value = /Mobi|Android/i.test(navigator.userAgent)
+// })
 </script>
