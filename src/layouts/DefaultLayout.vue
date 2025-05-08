@@ -1,15 +1,22 @@
 <template>
-  <component :is="isMobile ? MobileLayout : DesktopLayout" />
+  <component :is="currentComponent" />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import MobileLayout from './MobileLayout.vue'
 import DesktopLayout from './DesktopLayout.vue'
+import Login from '@/views/auth/Login.vue'
+import Register from '@/views/auth/Register.vue'
 
-const isMobile = ref(false)
+const route = useRoute()
 
-// onMounted(() => {
-//   isMobile.value = /Mobi|Android/i.test(navigator.userAgent)
-// })
+const currentComponent = computed(() => {
+  if (route.path === '/login') return Login
+  if (route.path === '/register') return Register
+
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent)
+  return isMobile ? MobileLayout : DesktopLayout
+})
 </script>

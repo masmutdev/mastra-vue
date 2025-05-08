@@ -10,7 +10,7 @@
     <div>
       <!-- Logo -->
       <div class="flex items-center gap-2 mb-8 px-2">
-        <img :src="logo" alt="Logo" class="h-6 w-6" />
+        <img src="@/assets/img/logo.png" alt="Logo" class="h-6 w-6" />
         <span v-if="!isCollapsed" class="font-bold text-xl text-gray-800 dark:text-white">
           Masmut Dev
         </span>
@@ -102,7 +102,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import logo from '@/assets/img/logo.png'
 import {
   IconLayoutDashboard,
   IconUsers,
