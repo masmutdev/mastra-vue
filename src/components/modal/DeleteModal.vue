@@ -5,8 +5,13 @@
       >?
     </p>
     <template #footer>
-      <button @click="onCancel" class="px-3 py-1 text-sm bg-gray-100 rounded">Batal</button>
-      <button @click="onConfirm" class="px-3 py-1 text-sm bg-red-500 text-white rounded">
+      <button @click="onCancel" class="cursor-pointer px-3 py-1 text-sm bg-gray-100 rounded">
+        Batal
+      </button>
+      <button
+        @click="onConfirm"
+        class="cursor-pointer px-3 py-1 text-sm bg-red-500 text-white rounded"
+      >
         Hapus
       </button>
     </template>

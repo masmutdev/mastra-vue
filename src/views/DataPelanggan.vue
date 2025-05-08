@@ -17,17 +17,17 @@
             @click="toggleBulkMenu"
             class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
           >
-            <IconDotsVertical class="w-5 h-5 text-gray-700 dark:text-white" />
+            <IconDotsVertical class="cursor-pointer w-5 h-5 text-gray-700 dark:text-white" />
           </button>
 
           <div
             v-if="showDotsMenu"
-            class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow z-50"
+            class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded shadow z-50"
           >
             <button
               @click="bulkEdit"
               :disabled="table.selected.value.length === 0"
-              class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
+              class="cursor-pointer flex items-center gap-2 w-full text-left px-4 py-2 text-sm disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <IconEdit class="w-4 h-4 text-yellow-500" />
               Bulk Edit
@@ -36,7 +36,7 @@
             <button
               @click="bulkDelete"
               :disabled="table.selected.value.length === 0"
-              class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
+              class="cursor-pointer flex items-center gap-2 w-full text-left px-4 py-2 text-sm disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <IconTrash class="w-4 h-4 text-red-500" />
               Bulk Hapus

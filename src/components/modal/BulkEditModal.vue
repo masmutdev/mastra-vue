@@ -8,10 +8,12 @@
       <option value="Tidak Aktif">Tidak Aktif</option>
     </select>
     <template #footer>
-      <button @click="onClose" class="px-3 py-1 text-sm bg-gray-100 rounded">Batal</button>
+      <button @click="onClose" class="cursor-pointer px-3 py-1 text-sm bg-gray-100 rounded">
+        Batal
+      </button>
       <button
         @click="() => onSave(newStatus)"
-        class="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+        class="cursor-pointer px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
       >
         Simpan
       </button>

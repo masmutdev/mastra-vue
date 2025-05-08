@@ -18,8 +18,13 @@
       </label>
     </div>
     <template #footer>
-      <button @click="onClose" class="px-3 py-1 text-sm bg-gray-100 rounded">Batal</button>
-      <button @click="onSave" class="px-3 py-1 text-sm bg-blue-500 text-white rounded">
+      <button @click="onClose" class="cursor-pointer px-3 py-1 text-sm bg-gray-100 rounded">
+        Batal
+      </button>
+      <button
+        @click="onSave"
+        class="cursor-pointer px-3 py-1 text-sm bg-blue-500 text-white rounded"
+      >
         Simpan
       </button>
     </template>
